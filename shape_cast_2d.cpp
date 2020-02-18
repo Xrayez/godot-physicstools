@@ -262,8 +262,6 @@ void ShapeCast2D::_update_shapecast_state() {
 	Transform2D gt = get_global_transform();
 	Vector2 to = gt.basis_xform(cast_to);
 
-	float margin = 0.0;
-	
 	bool can_move = dss->cast_motion(shape_rid, gt, to, margin, 
 			collision_safe_distance, collision_unsafe_distance, 
 			exclude, collision_mask, collide_with_bodies, collide_with_areas);
