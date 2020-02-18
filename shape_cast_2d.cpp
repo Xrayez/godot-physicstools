@@ -260,18 +260,21 @@ void ShapeCast2D::_update_shapecast_state() {
 	ERR_FAIL_COND(!dss);
 
 	Transform2D gt = get_global_transform();
-	Vector2 to = gt.basis_xform(cast_to);
-
-	bool can_move = dss->cast_motion(shape_rid, gt, to, margin, 
-			collision_safe_distance, collision_unsafe_distance, 
-			exclude, collision_mask, collide_with_bodies, collide_with_areas);
-			
-	collided = !can_move || collision_unsafe_distance < 1.0;
+	bool process_intersections = true;
 	
-	if (collided) {
-		result.clear();
+	if (cast_to != Vector2()) {
+		Vector2 to = gt.basis_xform(cast_to);
 		
+		bool can_move = dss->cast_motion(shape_rid, gt, to, margin, 
+				collision_safe_distance, collision_unsafe_distance, 
+				exclude, collision_mask, collide_with_bodies, collide_with_areas);
+				
 		gt.set_origin(gt.get_origin() + to * collision_unsafe_distance);
+		
+		process_intersections = !can_move || collision_unsafe_distance < 1.0;
+	}
+	if (process_intersections) {
+		result.clear();
 		
 		bool intersected = true;
 		Set<RID> checked = exclude;
@@ -286,6 +289,7 @@ void ShapeCast2D::_update_shapecast_state() {
 			}
 		}
 	}
+	collided = process_intersections;
 }
 
 void ShapeCast2D::force_shapecast_update() {
