@@ -214,13 +214,20 @@ void ShapeCast2D::_notification(int p_what) {
 				draw_col.g = g;
 				draw_col.b = g;
 			}
+			// Draw continuos chain of shapes along the cast.
+			const int steps = MAX(2, cast_to.length() / shape->get_rect().get_size().length() * 8);
+			for (int i = 0; i <= steps; ++i) {
+				draw_set_transform(Vector2().linear_interpolate(cast_to, real_t(i) / steps), 0.0, Size2(1, 1));
+				shape->draw(get_canvas_item(), draw_col);
+			}
+			draw_set_transform(Vector2(), 0.0, Size2(1, 1));
 			
-			Transform2D xf;
-			xf.rotate(cast_to.angle());
-			xf.translate(Vector2(cast_to.length(), 0));
-
 			// Draw an arrow indicating where the ShapeCast is pointing to.
 			if (cast_to != Vector2()) {
+				Transform2D xf;
+				xf.rotate(cast_to.angle());
+				xf.translate(Vector2(cast_to.length(), 0));
+				
 				draw_line(Vector2(), cast_to, draw_col, 2);
 				Vector<Vector2> pts;
 				float tsize = 8;
@@ -232,13 +239,6 @@ void ShapeCast2D::_notification(int p_what) {
 					cols.push_back(draw_col);
 
 				draw_primitive(pts, cols, Vector<Vector2>());
-			}
-			
-			// Draw continuos chain of shapes along the cast.
-			const int steps = MAX(2, cast_to.length() / shape->get_rect().get_size().length() * 8);
-			for (int i = 0; i <= steps; ++i) {
-				draw_set_transform(Vector2().linear_interpolate(cast_to, real_t(i) / steps), 0.0, Size2(1, 1));
-				shape->draw(get_canvas_item(), draw_col);
 			}
 #endif
 		} break;
