@@ -14,6 +14,7 @@ class ShapeCast2D : public Node2D {
 	Vector2 cast_to;
 	
 	Set<RID> exclude;
+	real_t margin;
 	uint32_t collision_mask;
 	bool exclude_parent_body;
 	bool collide_with_areas;
@@ -51,6 +52,12 @@ public:
 
 	void set_cast_to(const Vector2 &p_point);
 	Vector2 get_cast_to() const;
+	
+	void set_margin(real_t p_margin);
+	real_t get_margin() const;
+	
+	void set_max_results(int p_max_results);
+	int get_max_results() const;
 
 	void set_collision_mask(uint32_t p_mask);
 	uint32_t get_collision_mask() const;
@@ -62,10 +69,9 @@ public:
 	bool get_exclude_parent_body() const;
 
 	void force_shapecast_update();
-
 	bool is_colliding() const;
-	int get_collision_count() const;
 	
+	int get_collision_count() const;
 	Object *get_collider(int p_idx) const;
 	int get_collider_shape(int p_idx) const;
 	Vector2 get_collision_point(int p_idx) const;
@@ -75,9 +81,8 @@ public:
 	int get_closest_collider_shape() const;
 	Vector2 get_closest_collision_point() const;
 	Vector2 get_closest_collision_normal() const;
-	
-	real_t get_closest_safe_distance() const;
-	real_t get_closest_unsafe_distance() const;
+	real_t get_closest_collision_safe_distance() const;
+	real_t get_closest_collision_unsafe_distance() const;
 
 	void add_exception_rid(const RID &p_rid);
 	void add_exception(const Object *p_object);

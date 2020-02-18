@@ -8,19 +8,32 @@
 #include "core/core_string_names.h"
 
 void ShapeCast2D::set_cast_to(const Vector2 &p_point) {
-
 	cast_to = p_point;
 	if (is_inside_tree() && (Engine::get_singleton()->is_editor_hint() || get_tree()->is_debugging_collisions_hint()))
 		update();
 }
 
 Vector2 ShapeCast2D::get_cast_to() const {
-
 	return cast_to;
 }
 
-void ShapeCast2D::set_collision_mask(uint32_t p_mask) {
+void ShapeCast2D::set_margin(real_t p_margin) {
+	margin = p_margin;
+}
 
+real_t ShapeCast2D::get_margin() const {
+	return margin;
+}
+
+void ShapeCast2D::set_max_results(int p_max_results) {
+	max_results = p_max_results;
+}
+
+int ShapeCast2D::get_max_results() const {
+	return max_results;
+}
+
+void ShapeCast2D::set_collision_mask(uint32_t p_mask) {
 	collision_mask = p_mask;
 }
 
@@ -76,11 +89,11 @@ Vector2 ShapeCast2D::get_collision_normal(int p_idx) const {
 	return result[p_idx].normal;
 }
 
-real_t ShapeCast2D::get_closest_safe_distance() const {
+real_t ShapeCast2D::get_closest_collision_safe_distance() const {
 	return collision_safe_distance;
 }
 
-real_t ShapeCast2D::get_closest_unsafe_distance() const {
+real_t ShapeCast2D::get_closest_collision_unsafe_distance() const {
 	return collision_unsafe_distance;
 }
 
@@ -123,6 +136,7 @@ void ShapeCast2D::set_shape(const Ref<Shape2D> &p_shape) {
 		shape->connect(CoreStringNames::get_singleton()->changed, this, "update");
 		shape_rid = shape->get_rid();
 	}
+	update();
 }
 
 Ref<Shape2D> ShapeCast2D::get_shape() const {
@@ -193,7 +207,6 @@ void ShapeCast2D::_notification(int p_what) {
 			if (shape.is_null()) {
 				break;
 			}
-
 			Color draw_col = get_tree()->get_debug_collisions_color();
 			if (!enabled) {
 				float g = draw_col.get_v();
@@ -221,8 +234,8 @@ void ShapeCast2D::_notification(int p_what) {
 				draw_primitive(pts, cols, Vector<Vector2>());
 			}
 			
-			// Draw continous chain of shapes along the cast.
-			const int steps = MAX(2, cast_to.length() / shape->get_rect().get_size().length() * 2);
+			// Draw continuos chain of shapes along the cast.
+			const int steps = MAX(2, cast_to.length() / shape->get_rect().get_size().length() * 8);
 			for (int i = 0; i <= steps; ++i) {
 				draw_set_transform(Vector2().linear_interpolate(cast_to, real_t(i) / steps), 0.0, Size2(1, 1));
 				shape->draw(get_canvas_item(), draw_col);
@@ -368,6 +381,12 @@ void ShapeCast2D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_cast_to", "local_point"), &ShapeCast2D::set_cast_to);
 	ClassDB::bind_method(D_METHOD("get_cast_to"), &ShapeCast2D::get_cast_to);
+	
+	ClassDB::bind_method(D_METHOD("set_margin", "margin"), &ShapeCast2D::set_margin);
+	ClassDB::bind_method(D_METHOD("get_margin"), &ShapeCast2D::get_margin);
+	
+	ClassDB::bind_method(D_METHOD("set_max_results", "max_results"), &ShapeCast2D::set_max_results);
+	ClassDB::bind_method(D_METHOD("get_max_results"), &ShapeCast2D::get_max_results);
 
 	ClassDB::bind_method(D_METHOD("is_colliding"), &ShapeCast2D::is_colliding);
 	ClassDB::bind_method(D_METHOD("get_collision_count"), &ShapeCast2D::get_collision_count);
@@ -383,8 +402,8 @@ void ShapeCast2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_closest_collider_shape"), &ShapeCast2D::get_closest_collider_shape);
 	ClassDB::bind_method(D_METHOD("get_closest_collision_point"), &ShapeCast2D::get_closest_collision_point);
 	ClassDB::bind_method(D_METHOD("get_closest_collision_normal"), &ShapeCast2D::get_closest_collision_normal);
-	ClassDB::bind_method(D_METHOD("get_closest_safe_distance"), &ShapeCast2D::get_closest_safe_distance);
-	ClassDB::bind_method(D_METHOD("get_closest_unsafe_distance"), &ShapeCast2D::get_closest_unsafe_distance);
+	ClassDB::bind_method(D_METHOD("get_closest_collision_safe_distance"), &ShapeCast2D::get_closest_collision_safe_distance);
+	ClassDB::bind_method(D_METHOD("get_closest_collision_unsafe_distance"), &ShapeCast2D::get_closest_collision_unsafe_distance);
 
 	ClassDB::bind_method(D_METHOD("add_exception_rid", "rid"), &ShapeCast2D::add_exception_rid);
 	ClassDB::bind_method(D_METHOD("add_exception", "node"), &ShapeCast2D::add_exception);
@@ -415,6 +434,8 @@ void ShapeCast2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "Shape2D"), "set_shape", "get_shape");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "exclude_parent"), "set_exclude_parent_body", "get_exclude_parent_body");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "cast_to"), "set_cast_to", "get_cast_to");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "margin"), "set_margin", "get_margin");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "max_results"), "set_max_results", "get_max_results");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_mask", "get_collision_mask");
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "collision_result", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_INTERNAL), "", "_get_collision_result");
 
@@ -424,11 +445,14 @@ void ShapeCast2D::_bind_methods() {
 }
 
 ShapeCast2D::ShapeCast2D() {
-	// shape = Object::cast_to<Shape2D>(memnew(CircleShape2D));
+	Ref<CircleShape2D> default_shape = memnew(CircleShape2D);
+	set_shape(default_shape);
 	enabled = true;
 	collided = false;
+	margin = 0.0;
+	collision_safe_distance = 1.0;
+	collision_unsafe_distance = 1.0;
 	max_results = 32;
-	// against_shape = 0;
 	collision_mask = 1;
 	cast_to = Vector2(0, 50);
 	exclude_parent_body = true;
