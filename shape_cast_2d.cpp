@@ -215,7 +215,7 @@ void ShapeCast2D::_notification(int p_what) {
 				draw_col.b = g;
 			}
 			// Draw continuos chain of shapes along the cast.
-			const int steps = MAX(2, cast_to.length() / shape->get_rect().get_size().length() * 8);
+			const int steps = MAX(2, cast_to.length() / shape->get_rect().get_size().length() * 4);
 			for (int i = 0; i <= steps; ++i) {
 				draw_set_transform(Vector2().linear_interpolate(cast_to, real_t(i) / steps), 0.0, Size2(1, 1));
 				shape->draw(get_canvas_item(), draw_col);
@@ -450,11 +450,10 @@ void ShapeCast2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "shape", PROPERTY_HINT_RESOURCE_TYPE, "Shape2D"), "set_shape", "get_shape");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "exclude_parent"), "set_exclude_parent_body", "get_exclude_parent_body");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "cast_to"), "set_cast_to", "get_cast_to");
-	ADD_PROPERTY(PropertyInfo(Variant::REAL, "margin"), "set_margin", "get_margin");
+	ADD_PROPERTY(PropertyInfo(Variant::REAL, "margin", PROPERTY_HINT_RANGE, "0,100,0.01"), "set_margin", "get_margin");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "max_results"), "set_max_results", "get_max_results");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_2D_PHYSICS), "set_collision_mask", "get_collision_mask");
-	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "collision_result", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_INTERNAL), "", "_get_collision_result");
-
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "collision_result", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NOEDITOR), "", "_get_collision_result");
 	ADD_GROUP("Collide With", "collide_with");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collide_with_areas", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_collide_with_areas", "is_collide_with_areas_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collide_with_bodies", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_collide_with_bodies", "is_collide_with_bodies_enabled");
