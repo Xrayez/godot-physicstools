@@ -89,6 +89,8 @@ public:
 	void remove_exception_rid(const RID &p_rid);
 	void remove_exception(const Object *p_object);
 	void clear_exceptions();
+	
+	String get_configuration_warning() const;
 
 	ShapeCast2D();
 };

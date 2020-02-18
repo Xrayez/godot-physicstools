@@ -370,6 +370,20 @@ Array ShapeCast2D::_get_collision_result() const {
 	return ret;
 }
 
+String ShapeCast2D::get_configuration_warning() const {
+
+	String warning = Node2D::get_configuration_warning();
+
+	if (shape.is_null()) {
+		if (!warning.empty()) {
+			warning += "\n\n";
+		}
+		warning += TTR("This node cannot interact with other objects unless a Shape2D is assigned.");
+	}
+
+	return warning;
+}
+
 void ShapeCast2D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &ShapeCast2D::set_enabled);
