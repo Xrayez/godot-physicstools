@@ -143,14 +143,6 @@ Ref<Shape2D> ShapeCast2D::get_shape() const {
 	return shape;
 }
 
-void ShapeCast2D::set_shape_rid(const RID &p_shape_rid) {
-	shape_rid = p_shape_rid;
-}
-
-RID ShapeCast2D::get_shape_rid() const {
-	return shape_rid;
-}
-
 void ShapeCast2D::set_exclude_parent_body(bool p_exclude_parent_body) {
 
 	if (exclude_parent_body == p_exclude_parent_body)
@@ -385,16 +377,12 @@ String ShapeCast2D::get_configuration_warning() const {
 }
 
 void ShapeCast2D::_bind_methods() {
-
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &ShapeCast2D::set_enabled);
 	ClassDB::bind_method(D_METHOD("is_enabled"), &ShapeCast2D::is_enabled);
 	
 	ClassDB::bind_method(D_METHOD("set_shape", "shape"), &ShapeCast2D::set_shape);
 	ClassDB::bind_method(D_METHOD("get_shape"), &ShapeCast2D::get_shape);
 	
-	ClassDB::bind_method(D_METHOD("set_shape_rid", "shape_rid"), &ShapeCast2D::set_shape_rid);
-	ClassDB::bind_method(D_METHOD("get_shape_rid"), &ShapeCast2D::get_shape_rid);
-
 	ClassDB::bind_method(D_METHOD("set_cast_to", "local_point"), &ShapeCast2D::set_cast_to);
 	ClassDB::bind_method(D_METHOD("get_cast_to"), &ShapeCast2D::get_cast_to);
 	

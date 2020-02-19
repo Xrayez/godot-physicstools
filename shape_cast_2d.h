@@ -47,9 +47,6 @@ public:
 	void set_shape(const Ref<Shape2D> &p_shape);
 	Ref<Shape2D> get_shape() const;
 	
-	void set_shape_rid(const RID &p_shape_rid);
-	RID get_shape_rid() const;
-
 	void set_cast_to(const Vector2 &p_point);
 	Vector2 get_cast_to() const;
 	
