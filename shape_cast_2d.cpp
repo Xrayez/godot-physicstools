@@ -281,7 +281,7 @@ void ShapeCast2D::_update_shapecast_state() {
 			}
 		}
 	}
-	collided = process_intersections;
+	collided = process_intersections && !result.empty();
 }
 
 void ShapeCast2D::force_shapecast_update() {
