@@ -448,8 +448,6 @@ void ShapeCast2D::_bind_methods() {
 }
 
 ShapeCast2D::ShapeCast2D() {
-	Ref<CircleShape2D> default_shape = memnew(CircleShape2D);
-	set_shape(default_shape);
 	enabled = true;
 	collided = false;
 	margin = 0.0;
