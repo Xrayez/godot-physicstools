@@ -85,7 +85,4 @@ before_script:
   - ln -s $TRAVIS_BUILD_DIR "modules/physicstools"
 
 script:
-  - scons -j3 CC=$CC CXX=$CXX platform=$GODOT_TARGET TOOLS=$TOOLS $OPTIONS $MODULES_DISABLED &&
-    if [ "$GODOT_TARGET" = "server" ]; then
-        $TRAVIS_BUILD_DIR/tests/run.sh "$GODOT_BINARY_DIR""$GODOT_BINARY";
-    fi
+  - scons -j3 CC=$CC CXX=$CXX platform=$GODOT_TARGET TOOLS=$TOOLS $OPTIONS $MODULES_DISABLED
