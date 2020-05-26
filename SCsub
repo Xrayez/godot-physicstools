@@ -1,15 +1,11 @@
-#!/usr/bin/env python
-
 Import('env')
-Import('env_modules')
+env_physicstools = env.Clone()
 
-env_physicstools = env_modules.Clone()
+env_physicstools.add_source_files(env.modules_sources, '*.cpp')
 
-# Module source files
-source_dirs = [
-	"./",
-]
-env_physicstools.Prepend(CPPPATH=source_dirs)
-sources = [Glob(d + "*.cpp") for d in source_dirs]
+Export('env_physicstools')
 
-env_physicstools.add_source_files(env.modules_sources, sources)
+SConscript('2d/SCsub')
+
+if not env["disable_3d"]:
+    SConscript('3d/SCsub')
